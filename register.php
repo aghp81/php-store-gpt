@@ -6,11 +6,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
 
-    $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
-    if ($stmt->execute([$username, $password, $role])) {
-        echo "ثبت‌نام با موفقیت انجام شد.";
+    // بررسی تکراری بودن نام کاربری
+    $checkStmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+    $checkStmt->execute([$username]);
+    if ($checkStmt->rowCount() > 0) {
+        echo "این نام کاربری قبلاً ثبت شده است. لطفاً نام کاربری دیگری انتخاب کنید.";
     } else {
-        echo "خطا در ثبت‌نام.";
+        // ثبت نام کاربر جدید
+        $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
+        if ($stmt->execute([$username, $password, $role])) {
+            echo "ثبت‌نام با موفقیت انجام شد.";
+        } else {
+            echo "خطا در ثبت‌نام.";
+        }
     }
 }
 ?>
