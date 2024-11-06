@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 <div class="container">
-    <div class="register-form">
+    <div class="register-form text-right">
         <h2 class="text-center">ثبت‌نام</h2>
         <?php if ($message): ?>
             <div class="alert alert-info text-center"><?= $message ?></div>

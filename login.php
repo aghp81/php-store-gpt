@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 <div class="container">
-    <div class="login-form">
+    <div class="login-form text-right">
         <h2 class="text-center">ورود</h2>
         <?php if ($message): ?>
             <div class="alert alert-danger text-center"><?= $message ?></div>
