@@ -5,11 +5,11 @@ require 'db.php';
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->execute([$username]);
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
     $user = $stmt->fetch();
 
     if ($user && password_verify($password, $user['password'])) {
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         exit();
     } else {
-        $message = "نام کاربری یا رمز عبور اشتباه است.";
+        $message = "ایمیل یا رمز عبور اشتباه است.";
     }
 }
 ?>
@@ -39,26 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <title>فرم ورود</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Vazir', sans-serif;
-        }
-        .login-form {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .form-control::placeholder {
-            color: #bbb;
-        }
-    </style>
 </head>
 <body>
-
 <div class="container">
     <div class="login-form">
         <h2 class="text-center">ورود</h2>
@@ -67,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
         <form method="POST" action="">
             <div class="form-group">
-                <label for="username">نام کاربری</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="نام کاربری" required>
+                <label for="email">ایمیل</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="ایمیل" required>
             </div>
             <div class="form-group">
                 <label for="password">رمز عبور</label>
@@ -79,6 +61,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p class="text-center mt-3">حساب کاربری ندارید؟ <a href="register.php">ثبت‌نام</a></p>
     </div>
 </div>
-
 </body>
 </html>
