@@ -4,22 +4,27 @@ require 'db.php';
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
+    $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
 
-    // بررسی تکراری بودن نام کاربری
-    $checkStmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    $checkStmt->execute([$username]);
-    if ($checkStmt->rowCount() > 0) {
-        $message = "این نام کاربری قبلاً ثبت شده است. لطفاً نام کاربری دیگری انتخاب کنید.";
+    // اعتبارسنجی ایمیل
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "آدرس ایمیل معتبر نیست.";
     } else {
-        // ثبت نام کاربر جدید
-        $stmt = $pdo->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
-        if ($stmt->execute([$username, $password, $role])) {
-            $message = "ثبت‌نام با موفقیت انجام شد.";
+        // بررسی تکراری بودن ایمیل
+        $checkStmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $checkStmt->execute([$email]);
+        if ($checkStmt->rowCount() > 0) {
+            $message = "این ایمیل قبلاً ثبت شده است.";
         } else {
-            $message = "خطا در ثبت‌نام.";
+            // ثبت‌نام کاربر جدید
+            $stmt = $pdo->prepare("INSERT INTO users (email, password, role) VALUES (?, ?, ?)");
+            if ($stmt->execute([$email, $password, $role])) {
+                $message = "ثبت‌نام با موفقیت انجام شد.";
+            } else {
+                $message = "خطا در ثبت‌نام.";
+            }
         }
     }
 }
@@ -31,26 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <title>فرم ثبت‌نام</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Vazir', sans-serif;
-        }
-        .register-form {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        .form-control::placeholder {
-            color: #bbb;
-        }
-    </style>
 </head>
 <body>
-
 <div class="container">
     <div class="register-form">
         <h2 class="text-center">ثبت‌نام</h2>
@@ -59,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <?php endif; ?>
         <form method="POST" action="">
             <div class="form-group">
-                <label for="username">نام کاربری</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder="نام کاربری" required>
+                <label for="email">ایمیل</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="ایمیل" required>
             </div>
             <div class="form-group">
                 <label for="password">رمز عبور</label>
@@ -79,6 +66,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <p class="text-center mt-3">قبلاً ثبت‌نام کرده‌اید؟ <a href="login.php">ورود</a></p>
     </div>
 </div>
-
 </body>
 </html>
