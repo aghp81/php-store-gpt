@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $newPassword = $_POST['new_password'];
     $confirmPassword = $_POST['confirm_password'];
 
-    // بازیابی رمز عبور فعلی کاربر از دیتابیس
-    $stmt = $pdo->prepare("SELECT password FROM users WHERE id = ?");
+    // بازیابی رمز عبور فعلی و نقش کاربر از دیتابیس
+    $stmt = $pdo->prepare("SELECT password, role FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
 
@@ -27,7 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // بروزرسانی رمز عبور در دیتابیس
             $updateStmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
             if ($updateStmt->execute([$hashedPassword, $_SESSION['user_id']])) {
-                $message = "رمز عبور با موفقیت تغییر یافت.";
+                // هدایت کاربر بر اساس نقش
+                if ($user['role'] === 'admin') {
+                    header("Location: admin_dashboard.php");
+                } elseif ($user['role'] === 'seller') {
+                    header("Location: seller_dashboard.php");
+                } else {
+                    header("Location: customer_dashboard.php");
+                }
+                exit();
             } else {
                 $message = "خطا در تغییر رمز عبور.";
             }
