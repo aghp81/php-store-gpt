@@ -2,6 +2,7 @@
 session_start();
 require 'db.php';
 
+
 $message = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -26,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: customer_dashboard.php");
                 break;
         }
+        // فرض کنید پس از تایید کاربر، ایمیل او از دیتابیس دریافت شده است
+$_SESSION['email'] = $user['email'];
+
         exit();
     } else {
         $message = "ایمیل یا رمز عبور اشتباه است.";
