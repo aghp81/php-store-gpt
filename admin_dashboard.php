@@ -58,8 +58,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
                         <a class="nav-link" href="#">مدیریت کاربران</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">تغییر رمز عبور</a>
+                        <a class="nav-link" href="change_password.php">تغییر رمز عبور</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="list_customers.php">لیست مشتری ها</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="list_sellers.php">لیست فروشنده ها</a>
+                    </li>
+                    
                     <!-- دکمه خروج -->
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">
