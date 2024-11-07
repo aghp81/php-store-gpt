@@ -11,40 +11,21 @@ if ($_SESSION['role'] != 'admin') {
 // اتصال به پایگاه داده
 require_once 'db.php';
 
-// تعریف متغیر برای جستجو
-$searchTerm = '';
+// اضافه کردن فایل jdf.php فقط یک‌بار
+require_once 'jdf.php';
 
-// بررسی ارسال فرم جستجو
-if (isset($_GET['search'])) {
-    $searchTerm = $_GET['search'];
+// متغیر جستجو
+$searchKeyword = '';
+if (isset($_POST['search'])) {
+    $searchKeyword = $_POST['search'];
 }
 
-// دستور SQL برای بازیابی لیست مشتری‌ها با جستجو
-$sql = "SELECT id, name, family_name, email, created_at FROM users WHERE role = 'customer'";
-
-// اگر جستجویی وجود داشته باشد، شرط LIKE برای جستجو در ایمیل یا نام مشتری‌ها اضافه می‌شود
-if (!empty($searchTerm)) {
-    $sql .= " AND (name LIKE :searchTerm OR family_name LIKE :searchTerm OR email LIKE :searchTerm)";
-}
-
+// بازیابی لیست مشتری‌ها از دیتابیس با امکان جستجو
+$sql = "SELECT id, name, family_name, email, created_at FROM users WHERE role = 'customer' AND (name LIKE :keyword OR family_name LIKE :keyword OR email LIKE :keyword)";
 $stmt = $pdo->prepare($sql);
-
-// اگر جستجو فعال باشد، پارامتر را به کوئری اضافه می‌کنیم
-if (!empty($searchTerm)) {
-    $stmt->bindValue(':searchTerm', '%' . $searchTerm . '%');
-}
-
-$stmt->execute();
-
-// بازیابی نتایج
+$stmt->execute(['keyword' => '%' . $searchKeyword . '%']);
 $customers = $stmt->fetchAll();
-
-// پیغام در صورت عدم وجود مشتری
-if (empty($customers)) {
-    $message = "هیچ مشتری‌ای یافت نشد.";
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="fa">
 <head>
@@ -62,15 +43,11 @@ if (empty($customers)) {
 <body>
 <div class="container mt-5">
     <h2>لیست مشتری‌ها</h2>
-    
+
     <!-- فرم جستجو -->
-    <form method="get" action="" class="mb-3">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" value="<?= htmlspecialchars($searchTerm) ?>" placeholder="جستجو کنید..." />
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">جستجو</button>
-            </div>
-        </div>
+    <form method="post" class="form-inline mb-3">
+        <input type="text" name="search" class="form-control mr-2" placeholder="جستجو بر اساس نام، نام خانوادگی یا ایمیل" value="<?php echo htmlspecialchars($searchKeyword); ?>">
+        <button type="submit" class="btn btn-primary">جستجو</button>
     </form>
 
     <!-- جدول نمایش مشتری‌ها -->
@@ -87,15 +64,18 @@ if (empty($customers)) {
             <?php
             if (!empty($customers)) {
                 foreach ($customers as $customer) {
+                    // تبدیل تاریخ میلادی به شمسی
+                    $created_at = $customer['created_at'];
+                    $jalali_date = jdate('Y/m/d', strtotime($created_at));
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($customer['name']) . "</td>";
                     echo "<td>" . htmlspecialchars($customer['family_name']) . "</td>";
                     echo "<td>" . htmlspecialchars($customer['email']) . "</td>";
-                    echo "<td>" . htmlspecialchars($customer['created_at']) . "</td>";
+                    echo "<td>" . htmlspecialchars($jalali_date) . "</td>";
                     echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='4'>" . (isset($message) ? $message : "هیچ مشتری‌ای یافت نشد.") . "</td></tr>";
+                echo "<tr><td colspan='4'>هیچ مشتری‌ای یافت نشد.</td></tr>";
             }
             ?>
         </tbody>
