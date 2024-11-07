@@ -11,6 +11,9 @@ if ($_SESSION['role'] != 'admin') {
 // اتصال به پایگاه داده
 require_once 'db.php';
 
+// اضافه کردن فایل jdf.php فقط یک‌بار
+require_once 'jdf.php';
+
 // تعریف متغیر برای جستجو
 $searchTerm = '';
 
@@ -44,7 +47,6 @@ if (empty($sellers)) {
     $message = "هیچ فروشنده‌ای یافت نشد.";
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="fa">
 <head>
@@ -87,11 +89,14 @@ if (empty($sellers)) {
             <?php
             if (!empty($sellers)) {
                 foreach ($sellers as $seller) {
+                    // تبدیل تاریخ میلادی به شمسی با استفاده از تابع jdf
+                    $created_at = $seller['created_at'];
+                    $jalali_date = jdate('Y/m/d', strtotime($created_at));
                     echo "<tr>";
                     echo "<td>" . htmlspecialchars($seller['name']) . "</td>";
                     echo "<td>" . htmlspecialchars($seller['family_name']) . "</td>";
                     echo "<td>" . htmlspecialchars($seller['email']) . "</td>";
-                    echo "<td>" . htmlspecialchars($seller['created_at']) . "</td>";
+                    echo "<td>" . htmlspecialchars($jalali_date) . "</td>";
                     echo "</tr>";
                 }
             } else {
