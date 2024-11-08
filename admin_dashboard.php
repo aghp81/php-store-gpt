@@ -66,6 +66,15 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
                     <li class="nav-item">
                         <a class="nav-link" href="list_sellers.php">لیست فروشنده ها</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="product_categories.php">لیست دسته بندی ها</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="add_category.php">افزودن دسته بندی ها</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="edit_category.php">ویرایش دسته بندی ها</a>
+                    </li>
                     
                     <!-- دکمه خروج -->
                     <li class="nav-item">
