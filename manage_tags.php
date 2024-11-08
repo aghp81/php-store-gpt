@@ -2,6 +2,8 @@
 session_start();
 include 'db.php'; // فایل اتصال به دیتابیس
 include 'check_role.php'; // بررسی نقش کاربر
+// اضافه کردن فایل jdf.php فقط یک‌بار
+require_once 'jdf.php';
 
 // چک کردن نقش کاربر (فقط مدیر و فروشنده دسترسی دارند)
 if (!in_array($_SESSION['role'], ['admin', 'seller'])) {
@@ -67,12 +69,16 @@ $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($tags as $tag): ?>
+            <?php foreach ($tags as $tag): 
+                // تبدیل تاریخ میلادی به شمسی با استفاده از تابع jdf
+                    $created_at = $tag['created_at'];
+                    $jalali_date = jdate('Y/m/d', strtotime($created_at));
+                    ?>
                 <tr>
                     <td><?= htmlspecialchars($tag['id']) ?></td>
                     <td><?= htmlspecialchars($tag['name']) ?></td>
                     <td><?= htmlspecialchars($tag['creator_name'] . ' ' . $tag['creator_family_name']) ?></td>
-                    <td><?= htmlspecialchars($tag['created_at']) ?></td>
+                    <td><?= htmlspecialchars($jalali_date) ?></td>
                     <td>
                         <form action="manage_tags.php" method="post" style="display:inline-block;">
                             <input type="hidden" name="edit_id" value="<?= $tag['id'] ?>">
