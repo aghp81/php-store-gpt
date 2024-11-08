@@ -1,26 +1,25 @@
 <?php
 session_start();
-include 'db.php'; // فایل اتصال به دیتابیس
-include 'check_role.php'; // چک نقش کاربر
+require_once 'db.php';
 
-// بررسی نقش کاربر
-if (!in_array($_SESSION['role'], ['admin', 'seller'])) {
-    echo "شما دسترسی لازم برای این بخش را ندارید.";
+// Check if the user is logged in and has access (only admin and seller)
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'seller')) {
+    header('Location: login.php');
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = trim($_POST['name']);
-    $created_by = $_SESSION['user_id'];
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tagName = $_POST['tag_name'];
+    $createdBy = $_SESSION['user_id'];
 
-    if (!empty($name)) {
-        // درج تگ در دیتابیس
-        $stmt = $pdo->prepare("INSERT INTO tags (name, created_by) VALUES (?, ?)");
-        $stmt->execute([$name, $created_by]);
-        echo "تگ با موفقیت ایجاد شد!";
-    } else {
-        echo "لطفا نام تگ را وارد کنید.";
-    }
+    // Insert the new tag into the database
+    $stmt = $pdo->prepare("INSERT INTO tags (name, created_by, created_at) VALUES (?, ?, NOW())");
+    $stmt->execute([$tagName, $createdBy]);
+
+    // Redirect to manage_tags.php after successful creation
+    header('Location: manage_tags.php');
+    exit;
 }
 ?>
 
@@ -28,16 +27,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>ایجاد تگ</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <title>ایجاد تگ جدید</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css">
 </head>
 <body>
 <div class="container mt-5">
     <h2>ایجاد تگ جدید</h2>
-    <form method="post">
+    <form action="create_tag.php" method="POST">
         <div class="mb-3">
-            <label for="name" class="form-label">نام تگ</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label for="tag_name" class="form-label">نام تگ</label>
+            <input type="text" class="form-control" id="tag_name" name="tag_name" required>
         </div>
         <button type="submit" class="btn btn-primary">ایجاد تگ</button>
     </form>
