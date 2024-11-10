@@ -75,6 +75,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
                     <li class="nav-item">
                         <a class="nav-link" href="edit_category.php">ویرایش دسته بندی ها</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create_tag.php">ایجاد تگ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_tags.php">مدیریت تگ</a>
+                    </li>
+                    
                     
                     <!-- دکمه خروج -->
                     <li class="nav-item">
