@@ -3,7 +3,7 @@ session_start();
 include 'db.php';
 
 $user_id = $_SESSION['user_id'];
-$user_role = $_SESSION['user_role']; // 'admin' یا 'seller'
+$user_role = $_SESSION['role']; // 'admin' یا 'seller'
 $product_id = $_GET['id'];
 
 // بررسی دسترسی به محصول
