@@ -4,6 +4,7 @@ include 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $productName = $_POST['product_name'];
+    $description = $_POST['description'];
     $categoryId = $_POST['category_id'];
     $tags = $_POST['tags'] ?? [];
     $price = $_POST['price'];
@@ -14,8 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     move_uploaded_file($_FILES['main_image']['tmp_name'], $mainImagePath);
 
     // ذخیره اطلاعات محصول در دیتابیس
-    $stmt = $pdo->prepare("INSERT INTO products (name, category_id, price, main_image, created_by) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$productName, $categoryId, $price, $mainImagePath, $createdBy]);
+    $stmt = $pdo->prepare("INSERT INTO products (name, description,  category_id, price, main_image, created_by) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$productName, $description, $categoryId, $price, $mainImagePath, $createdBy]);
     $productId = $pdo->lastInsertId();
 
     // ذخیره تگ‌های محصول
