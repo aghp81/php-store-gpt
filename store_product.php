@@ -8,6 +8,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryId = $_POST['category_id'];
     $tags = $_POST['tags'] ?? [];
     $price = $_POST['price'];
+    $stock_quantity = $_POST['stock_quantity'];
+    $is_available = $_POST['is_available'];
     $createdBy = $_SESSION['user_id'];
 
     // ذخیره تصویر شاخص
@@ -15,8 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     move_uploaded_file($_FILES['main_image']['tmp_name'], $mainImagePath);
 
     // ذخیره اطلاعات محصول در دیتابیس
-    $stmt = $pdo->prepare("INSERT INTO products (name, description,  category_id, price, main_image, created_by) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$productName, $description, $categoryId, $price, $mainImagePath, $createdBy]);
+    $stmt = $pdo->prepare("INSERT INTO products (name, description,  category_id, price, main_image, stock_quantity, is_available, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$productName, $description, $categoryId, $price, $mainImagePath, $stock_quantity, $is_available, $createdBy]);
     $productId = $pdo->lastInsertId();
 
     // ذخیره تگ‌های محصول
