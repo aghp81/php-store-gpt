@@ -68,6 +68,17 @@ $tags = $pdo->query("SELECT id, name FROM tags")->fetchAll(PDO::FETCH_ASSOC);
             <input type="file" name="gallery_images[]" class="form-control-file" multiple>
         </div>
 
+        <!-- تعداد موجودی -->
+    <label for="stock_quantity">تعداد موجودی:</label>
+    <input type="number" name="stock_quantity" id="stock_quantity" min="0" required><br><br>
+
+    <!-- وضعیت موجود بودن -->
+    <label for="is_available">وضعیت موجودی:</label>
+    <select name="is_available" id="is_available" required>
+        <option value="1">موجود</option>
+        <option value="0">ناموجود</option>
+    </select><br><br>
+
         <button type="submit" class="btn btn-primary">ایجاد محصول</button>
     </form>
 </div>
