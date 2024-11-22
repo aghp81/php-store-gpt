@@ -28,7 +28,12 @@ if ($_SESSION['role'] === 'admin') {
               JOIN users ON products.created_by = users.id";
 } else {
     // برای فروشنده، فقط محصولات خودش را نمایش می‌دهد
-    $query = "SELECT products.*, users.name, users.family_name 
+    $query = "SELECT products.id AS product_id,
+    products.name AS product_name,
+    products.main_image,
+    products.price,
+    users.name AS creator_name,
+    users.family_name AS creator_family_name
               FROM products 
               JOIN users ON products.created_by = users.id 
               WHERE created_by = :user_id";
@@ -64,7 +69,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tr>
         <?php foreach ($products as $product): ?>
             <tr>
-                <td><?= htmlspecialchars($product['name']); ?></td>
+                <td><?= htmlspecialchars($product['product_name']); ?></td>
                 <td><?= htmlspecialchars($product['description']); ?></td>
                 <td><?= htmlspecialchars($product['category_id']); ?></td>
                 <td><?= htmlspecialchars($product['stock_quantity']); ?></td>

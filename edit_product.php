@@ -24,6 +24,8 @@ if (!$product) {
 
 $product_id = $_GET['id'];
 
+
+
 // دریافت اطلاعات محصول
 $query = "SELECT * FROM products WHERE id = :id";
 $stmt = $pdo->prepare($query);
@@ -45,19 +47,57 @@ $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
 $tags_stmt = $pdo->query("SELECT * FROM tags");
 $tags = $tags_stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// دریافت گالری تصاویر
+$gallery_query = "SELECT * FROM product_images WHERE product_id = :product_id";
+$gallery_stmt = $pdo->prepare($gallery_query);
+$gallery_stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+$gallery_stmt->execute();
+$gallery_images = $gallery_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 // بررسی ارسال فرم و بروزرسانی اطلاعات
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'];
+    $product_name = $_POST['product_name'];
     $description = $_POST['description'];
     $category_id = $_POST['category_id'];
     $stock_quantity = $_POST['stock_quantity'];
     $is_available = isset($_POST['is_available']) ? 1 : 0;
     $selected_tags = $_POST['tags'] ?? [];
 
+     // بروزرسانی تصویر شاخص
+     if (!empty($_FILES['thumbnail']['name'])) {
+        $thumbnail_name = time() . '_' . $_FILES['thumbnail']['name'];
+        $thumbnail_path = "uploads/" . $thumbnail_name;
+        move_uploaded_file($_FILES['thumbnail']['tmp_name'], $thumbnail_path);
+
+        // ذخیره تصویر جدید
+        $update_thumbnail_query = "UPDATE products SET thumbnail = :thumbnail WHERE id = :id";
+        $thumbnail_stmt = $pdo->prepare($update_thumbnail_query);
+        $thumbnail_stmt->bindParam(':thumbnail', $thumbnail_path);
+        $thumbnail_stmt->bindParam(':id', $product_id, PDO::PARAM_INT);
+        $thumbnail_stmt->execute();
+    }
+
+    // بروزرسانی گالری تصاویر
+    if (!empty($_FILES['gallery']['name'][0])) {
+        foreach ($_FILES['gallery']['name'] as $key => $image_name) {
+            $gallery_name = time() . '_' . $image_name;
+            $gallery_path = "uploads/" . $gallery_name;
+            move_uploaded_file($_FILES['gallery']['tmp_name'][$key], $gallery_path);
+
+            // ذخیره تصویر در دیتابیس
+            $gallery_insert_query = "INSERT INTO product_images (product_id, image_path) VALUES (:product_id, :image_path)";
+            $gallery_insert_stmt = $pdo->prepare($gallery_insert_query);
+            $gallery_insert_stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+            $gallery_insert_stmt->bindParam(':image_path', $gallery_path);
+            $gallery_insert_stmt->execute();
+        }
+    }
+
+
     // بروزرسانی اطلاعات محصول
-    $update_query = "UPDATE products SET name = :name, description = :description, category_id = :category_id, stock_quantity = :stock_quantity, is_available = :is_available WHERE id = :id";
+    $update_query = "UPDATE products SET product_name = :product_name, description = :description, category_id = :category_id, stock_quantity = :stock_quantity, is_available = :is_available WHERE id = :id";
     $update_stmt = $pdo->prepare($update_query);
-    $update_stmt->bindParam(':name', $name);
+    $update_stmt->bindParam(':product_name', $product_name);
     $update_stmt->bindParam(':description', $description);
     $update_stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
     $update_stmt->bindParam(':stock_quantity', $stock_quantity, PDO::PARAM_INT);
@@ -92,8 +132,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2>ویرایش محصول</h2>
     <form action="edit_product.php?id=<?= $product_id ?>" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
-            <label for="name" class="form-label">نام محصول</label>
-            <input type="text" class="form-control" id="name" name="name" value="<?= htmlspecialchars($product['name']) ?>" required>
+            <label for="product_name" class="form-label">نام محصول</label>
+            <input type="text" class="form-control" id="product_name" name="product_name" value="<?= htmlspecialchars($product['product_name']) ?>" required>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">توضیحات</label>
@@ -126,6 +166,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </option>
                 <?php endforeach; ?>
             </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="thumbnail" class="form-label">تصویر شاخص</label>
+            <input type="file" class="form-control" id="thumbnail" name="thumbnail">
+            <?php if ($product['main_image']): ?>
+                <img src="<?= $product['main_image'] ?>" alt="تصویر شاخص" class="img-thumbnail mt-2" style="width: 150px;">
+            <?php endif; ?>
+        </div>
+        <div class="mb-3">
+            <label for="gallery" class="form-label">گالری تصاویر</label>
+            <input type="file" class="form-control" id="gallery" name="gallery[]" multiple>
+            <div class="mt-2">
+                <?php foreach ($gallery_images as $image): ?>
+                    <img src="<?= $image['image_path'] ?>" alt="تصویر گالری" class="img-thumbnail" style="width: 100px; margin-right: 5px;">
+                <?php endforeach; ?>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
     </form>

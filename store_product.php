@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     move_uploaded_file($_FILES['main_image']['tmp_name'], $mainImagePath);
 
     // ذخیره اطلاعات محصول در دیتابیس
-    $stmt = $pdo->prepare("INSERT INTO products (name, description,  category_id, price, main_image, stock_quantity, is_available, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO products (product_name, description,  category_id, price, main_image, stock_quantity, is_available, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$productName, $description, $categoryId, $price, $mainImagePath, $stock_quantity, $is_available, $createdBy]);
     $productId = $pdo->lastInsertId();
 

@@ -81,6 +81,16 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] != 'admin') {
                     <li class="nav-item">
                         <a class="nav-link" href="manage_tags.php">مدیریت تگ</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_products.php">نمایش محصولات </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="create_product.php">ایجاد محصول </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="edit_product.php">ویرایش محصول</a>
+                    </li>
                     
                     
                     <!-- دکمه خروج -->
