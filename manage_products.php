@@ -49,14 +49,25 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <title>مدیریت محصولات</title>
+    <!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
 </head>
 <body>
     <h2>لیست محصولات</h2>
-    <table border="1">
+    <table  id="productsTable" class="display">
+    <thead>
+
         <tr>
             <th>نام محصول</th>
             <th>توضیحات</th>
@@ -67,6 +78,11 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <th>ویرایش</th>
             <th>حذف</th>
         </tr>
+        </thead>
+
+        <tbody>
+
+
         <?php foreach ($products as $product): ?>
             <tr>
                 <td><?= htmlspecialchars($product['product_name']); ?></td>
@@ -79,6 +95,31 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><a href="delete_product.php?id=<?= $product['id']; ?>" onclick="return confirm('آیا مطمئن هستید؟')">حذف</a></td>
             </tr>
         <?php endforeach; ?>
+        </tbody>
+
     </table>
 </body>
+
+<script>
+    $(document).ready(function() {
+        $('#productsTable').DataTable({
+            language: {
+                search: "جستجو:",
+                lengthMenu: "نمایش _MENU_ رکورد در هر صفحه",
+                info: "نمایش _START_ تا _END_ از _TOTAL_ رکورد",
+                paginate: {
+                    first: "ابتدا",
+                    last: "انتها",
+                    next: "بعدی",
+                    previous: "قبلی"
+                },
+                infoFiltered: "(فیلتر شده از _MAX_ رکورد)",
+                zeroRecords: "هیچ رکوردی یافت نشد",
+                infoEmpty: "رکوردی موجود نیست",
+            },
+            pageLength: 10
+        });
+    });
+</script>
+
 </html>
